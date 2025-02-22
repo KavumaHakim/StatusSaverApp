@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: KavumaHakim/checkout@main
+      - uses: actions/checkout@v4
       - name: Build APK
         uses: KavumaHakim/buildozer-action@main
         with:
