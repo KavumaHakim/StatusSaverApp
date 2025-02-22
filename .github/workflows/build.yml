@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: KavumaHakim/checkout@v1
       - name: Build APK
-        uses: KavumaHakim/buildozer-action@v2
+        uses: KavumaHakim/buildozer-action@main
         with:
           python-version: 3.8
           buildozer-cmd: buildozer -v android debug
