@@ -74,8 +74,8 @@ class Status:
                 os.makedirs("/sdcard/Statuses/Videos")
             Status(file_type, path)
 
-class MyScreenManager(ScreenManager):
-	pass
+# class MyScreenManager(ScreenManager):
+# 	pass
 
 
 class HomeScreen(Screen):
@@ -222,7 +222,6 @@ class VideoPopup(ModalView):
 
 	def play_pause(self):
 		video = self.ids.video
-		btn_icon = self.ids.icon_play
 		if video.state == 'play':
 			video.state = 'pause'
 		else:
@@ -309,7 +308,7 @@ class StatusSaverApp(MDApp):
 	def build(self):
 		Builder.load_file('main.kv')
 		Window.clearcolor = (1, 1, 1, 1)
-		my_manager = MyScreenManager()
+		my_manager = ScreenManager()
 		home_screen = HomeScreen(name = 'home')
 		image_screen = ImageScreen(name = 'image_screen')
 		video_screen = VideoScreen(name = 'video_screen')

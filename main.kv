@@ -1,6 +1,7 @@
 #: kivy 2.0.0
 #:import hex kivy.utils.get_color_from_hex
 
+
 <HomeScreen>:
 	AnchorLayout:
 		anchor_x: 'center' 
@@ -57,53 +58,15 @@
 
 
 <ImageScreen>:
-	BoxLayout:
-		orientation: 'vertical'
+	FloatLayout:
 		padding: 30
-		spacing: 30
-		MDSegmentedButton:
-			multiselect: False
-			type: 'large'
-			size_hint_x: .6
-			size_hint_y: None
-			height: 80
-			pos_hint: {'center_x': .5}
-			opening_icon_duration: 0
-			hiding_icon_duration: 0
-			CustomSegment:
-				selected_color: hex('#05b025')
-				radius: [30, 0, 0, 30]
-				theme_line_color: 'Custom'
-				line_color: hex('#05b025')
-				on_state:
-					root.ids.all.color = hex('#ffffff')
-					root.ids.saved.color = hex('#05b025')
-					root.change_content('all_tab')
-				MDSegmentButtonLabel:
-					id: all
-					text: 'All'
-					bold: True
-					selected_icon: ""
-					theme_text_color: 'Custom'
-					color: hex('#05b025')
-			CustomSegment:
-				selected_color: hex('#05b025')
-				radius: [0, 30, 30, 0]
-				theme_line_color: 'Custom'
-				line_color: hex('#05b025')
-				on_state:
-					root.ids.saved.color = hex('#ffffff')
-					root.ids.all.color = hex('#05b025')
-					root.change_content('saved_tab')
-				MDSegmentButtonLabel:
-					id: saved
-					text: 'Saved'
-					bold: True
-					theme_text_color: 'Custom'
-					color: hex('#05b025')
+
 		RecycleView:
 			id: view_port
 			do_scroll_x: False
+			size_hint_y: None
+			height: (root.height - navigation.height - 20)
+			pos_hint: {'bottom': 1}
 			GridLayout:
 				id: layout
 				cols: 2
@@ -113,54 +76,54 @@
 				pos_hint: {'center_x': .5, 'center_y': .5}
 				height: self.minimum_height
 
-<VideoScreen>:
-	BoxLayout:
-		orientation: 'vertical'
-		padding: 30
-		spacing: 30
-		MDSegmentedButton:
-			multiselect: False
-			type: 'large'
-			size_hint_x: .6
-			size_hint_y: None
+		MDCard:
+			id: navigation
+			size_hint: .6, None
 			height: 80
-			pos_hint: {'center_x': .5}
-			opening_icon_duration: 0
-			hiding_icon_duration: 0
-			CustomSegment:
-				selected_color: hex('#05b025')
-				radius: [30, 0, 0, 30]
-				theme_line_color: 'Custom'
-				line_color: hex('#05b025')
-				on_state:
-					root.ids.all.color = hex('#ffffff')
-					root.ids.saved.color = hex('#05b025')
-					root.change_content('all_tab')
-				MDSegmentButtonLabel:
-					id: all
-					text: 'All'
-					bold: True
-					selected_icon: ""
-					theme_text_color: 'Custom'
-					color: hex('#05b025')
-			CustomSegment:
-				selected_color: hex('#05b025')
-				radius: [0, 30, 30, 0]
-				theme_line_color: 'Custom'
-				line_color: hex('#05b025')
-				on_state:
-					root.ids.saved.color = hex('#ffffff')
-					root.ids.all.color = hex('#05b025')
-					root.change_content('saved_tab')
-				MDSegmentButtonLabel:
-					id: saved
-					text: 'Saved'
-					bold: True
-					theme_text_color: 'Custom'
-					color: hex('#05b025')
+			radius: 40
+			pos_hint: {'center_x': .5, 'top': .99}
+			canvas.before:
+				PushMatrix
+				StencilPush
+				RoundedRectangle:
+					pos: self.pos
+					size: self.size
+					radius: self.radius  
+				StencilUse
+			canvas.after:
+				StencilUnUse
+				StencilPop
+				PopMatrix
+				Color:
+					rgba: hex('#05b025')
+				Line:
+					width: 2  # Border thickness
+					rounded_rectangle: (self.x, self.y, self.width, self.height, 40)
+			BoxLayout:
+				orientation: 'horizontal'
+				SegmentedButton:
+					text: '[b]All[/b]'
+					markup: True
+					size_hint: (1, 1)
+					on_release: root.change_content('all_tab')
+				SegmentedButton:
+					text: '[b]Saved[/b]'
+					markup: True
+					size_hint: (1, 1)
+					on_release: root.change_content('saved_tab')
+
+
+
+<VideoScreen>:
+	FloatLayout:
+		padding: 30
+
 		RecycleView:
 			id: view_port
 			do_scroll_x: False
+			size_hint_y: None
+			height: (root.height - navigation.height - 20)
+			pos_hint: {'bottom': 1}
 			GridLayout:
 				id: vid_layout
 				cols: 2
@@ -169,6 +132,43 @@
 				size_hint_y: None
 				pos_hint: {'center_x': .5, 'center_y': .5}
 				height: self.minimum_height
+
+		MDCard:
+			id: navigation
+			size_hint: .6, None
+			height: 80
+			radius: 40
+			pos_hint: {'center_x': .5, 'top': .99}
+			canvas.before:
+				PushMatrix
+				StencilPush
+				RoundedRectangle:
+					pos: self.pos
+					size: self.size
+					radius: self.radius  
+				StencilUse
+			canvas.after:
+				StencilUnUse
+				StencilPop
+				PopMatrix
+				Color:
+					rgba: hex('#05b025')
+				Line:
+					width: 2  # Border thickness
+					rounded_rectangle: (self.x, self.y, self.width, self.height, 40)
+			BoxLayout:
+				orientation: 'horizontal'
+				SegmentedButton:
+					text: '[b]All[/b]'
+					markup: True
+					size_hint: (1, 1)
+					on_release: root.change_content('all_tab')
+				SegmentedButton:
+					text: '[b]Saved[/b]'
+					markup: True
+					size_hint: (1, 1)
+					on_release: root.change_content('saved_tab')
+
 
 
 <ImageViewer>:
@@ -179,7 +179,6 @@
 	background_color: (1, 1, 1, .9)
 	background: ''
 	RelativeLayout:
-		padding: [10, 10, 10, 10]
 		Image:
 			id: view_img
 			size_hint: (1, 1)
@@ -195,48 +194,39 @@
 					pos: self.pos
 					size: self.size
 					radius: [0, 0, 0, 0]
-		MDButton:
-			style: 'text'
-			radius: 0
-			size_hint: (.2, .2)
+		MDIconButton:
+			icon: 'arrow-left'
+			theme_icon_color: 'Custom'
+			icon_color: (0, 1, 0, 1)
 			pos_hint: {'left': 1, 'top': 1}
+			size_hint: (.2, None)
+			height: 50
 			on_release: root.contract()
-			MDButtonIcon:
-				icon: 'arrow-left'
-				color: (0, 1, 0, 1)
-				pos_hint: {'center_x': .5, 'center_y': .5}
-		MDButton:
-			id: previous_img_button
-			style: 'text'
-			size_hint: (.2, .2)
+		MDIconButton:
+			icon: 'skip-previous'
+			theme_icon_color: 'Custom'
+			icon_color: (0, 1, 0, 1)
+			size_hint: (.2, None)
+			height: 80
 			pos_hint: {'bottom': 1, 'center_x': .3}
-			radius: 0
 			on_release: root.prev_img()
-			MDButtonIcon:
-				icon: 'skip-previous'
-				color: (0, 1, 0, 1)
-				pos_hint: {'center_x': .5, 'center_y': .5}
-		MDButton:
-			id: download_img_btn
-			style: 'text'
-			size_hint: (.2, .2)
+		MDIconButton:
+			icon: 'download'
+			theme_icon_color: 'Custom'
+			icon_color: (0, 1, 0, 1)
+			size_hint: (.2, None)
+			height: 80
 			pos_hint: {'bottom': 1, 'center_x': .5}
-			radius: 0
 			on_release: root.save_img()
-			MDButtonIcon:
-				icon: 'download'
-				color: (0, 1, 0, 1)
-				pos_hint: {'center_x': .5, 'center_y': .5}
-		MDButton:
-			id: next_img_button
-			style: 'text'
-			size_hint: (.2, .2)
+		MDIconButton:
+			icon: 'skip-next'
+			theme_icon_color: 'Custom'
+			icon_color: (0, 1, 0, 1)
+			size_hint: (.2, None)
+			height: 80
 			pos_hint: {'bottom': 1, 'center_x': .7}
-			radius: 0
 			on_release: root.next_img()
-			MDButtonIcon:
-				icon: 'skip-next'
-				color: (0, 1, 0, 1)
+
 
 
 <VideoPopup>:
@@ -246,23 +236,24 @@
 	overlay_color: (.5, .5, .5, .3)
 	background_color: (1, 1, 1, .9)
 	background: ''
+
 	RelativeLayout:
-		padding: [10, 10, 10, 10]
+
 		StatusVideo:
 			id: video
 			size_hint: (1, 1)
 			source: root.video_source
 			state: 'play'
-		MDButton:
-			style: 'text'
-			radius: 0
-			size_hint: (.15, .15)
-			pos_hint: {'left': 1, 'top': 1}
+
+		MDIconButton:
+			icon: 'arrow-left'
+			theme_icon_color: 'Custom'
+			icon_color: (0, 1, 0, 1)
+			size_hint: (.15, None)
+			height: 40
+			pos_hint: {'top': 1, 'left': 1}
 			on_release: root.dismiss()
-			MDButtonIcon:
-				icon: 'arrow-left'
-				color: (0, 1, 0, 1)
-				pos_hint: {'center_x': .5, 'center_y': .5}
+
 		ProgressBar:
 			canvas.before:
 				Color: 
@@ -284,16 +275,15 @@
 			size_hint_y: None
 			height: 4
 			
-		MDButton:
-			style: 'text'
-			radius: 0
-			size_hint: (.15, .15)
-			pos_hint: {'right': 1, 'top': 1}
+		MDIconButton:
+			icon: 'download'
+			theme_icon_color: 'Custom'
+			icon_color: (0, 1, 0, 1)
+			size_hint: (.15, None)
+			height: 40
+			pos_hint: {'top': 1, 'right': 1}
 			on_release: root.save_video()
-			MDButtonIcon:
-				icon: 'download'
-				color: (0, 1, 0, 1)
-				pos_hint: {'center_x': .5, 'center_y': .5}
+
 		Widget: 
 			pos_hint: {'bottom': 1, 'center_x': .5}
 			size_hint: 1, None
@@ -305,40 +295,35 @@
 					pos: self.pos
 					size: self.size
 					radius: [0, 0, 0, 0]
-		MDButton:
-			id: play_previous_button
-			style: 'text'
-			size_hint: (.2, .2)
+
+		MDIconButton:
+			icon: 'skip-previous'
+			theme_icon_color: 'Custom'
+			icon_color: (0, 1, 0, 1)
+			size_hint: (.2, None)
+			height: 80
 			pos_hint: {'bottom': 1, 'center_x': .3}
-			radius: 0
 			on_release: root.play_previous()
-			MDButtonIcon:
-				icon: 'skip-previous'
-				color: (0, 1, 0, 1)
-				pos_hint: {'center_x': .5, 'center_y': .5}
-		MDButton:
+
+		MDIconButton:
 			id: play_pause_button
-			style: 'text'
-			size_hint: (.2, .2)
+			icon: 'play' if video.state=='pause' else 'pause'
+			theme_icon_color: 'Custom'
+			icon_color: (0, 1, 0, 1)
+			size_hint: (.2, None)
+			height: 80
 			pos_hint: {'bottom': 1, 'center_x': .5}
-			radius: 0
 			on_release: root.play_pause()
-			MDButtonIcon:
-				id: icon_play
-				icon: 'play' if video.state=='pause' else 'pause'
-				color: (0, 1, 0, 1)
-				pos_hint: {'center_x': .5, 'center_y': .5}
-		MDButton:
-			id: play_next_button
-			style: 'text'
-			size_hint: (.2, .2)
+
+		MDIconButton:
+			icon: 'skip-next'
+			theme_icon_color: 'Custom'
+			icon_color: (0, 1, 0, 1)
+			size_hint: (.2, None)
+			height: 80
 			pos_hint: {'bottom': 1, 'center_x': .7}
-			radius: 0
 			on_release: root.play_next()
-			MDButtonIcon:
-				icon: 'skip-next'
-				color: (0, 1, 0, 1)
-				pos_hint: {'center_x': .5, 'center_y': .5}
+
 
 
 <ImageCard>:
@@ -351,6 +336,7 @@
 		src = self.children[0].source
 		self.parent.parent.parent.parent.expand(src)
 
+
 <VideoCard>:
 	size_hint_y: None
 	height: 300
@@ -360,3 +346,13 @@
 	on_release:
 		src = self.vid_src
 		self.parent.parent.parent.parent.expand(src)
+
+
+<SegmentedButton@ToggleButtonBehavior+MDFlatButton>:
+	group: "segmented"
+	theme_text_color: 'Custom'
+	text_color: hex('#05b025')
+	on_state:
+		self.md_bg_color = hex('#05b025') if self.state == "down" else hex('#ffffff')
+		self.theme_text_color = 'Custom'
+		self.text_color = hex('#ffffff') if self.state == "down" else hex('#05b025')
