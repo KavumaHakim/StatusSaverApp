@@ -7,8 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build APK
-        uses: KavumaHakim/buildozer-action@main
+      - name: Buildozer action
+        uses: ArtemSBulgakov/buildozer-action@v1.1.3
         with:
           python-version: 3.8
           buildozer-cmd: buildozer -v android debug
