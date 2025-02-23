@@ -16,7 +16,8 @@ from kivymd.app import MDApp
 from glob import glob
 import asynckivy
 import cv2
-
+import datetime
+import os
 # '''Change this back before push'''
 # Window.size = (400, 650)
 # image_paths_all = glob('C:/Users/user/Desktop/my_folder/.Statuses/*.jpg')
