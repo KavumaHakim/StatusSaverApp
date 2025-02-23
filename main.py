@@ -1,8 +1,6 @@
 from kivy.uix.video import Video
-from kivy.uix.accordion import NumericProperty
-from kivy.uix.accordion import ObjectProperty
-from kivy.uix.accordion import StringProperty
-from kivy.uix.screenmanager import ScreenManager, Screen, RiseInTransition, FallOutTransition
+from kivy.uix.accordion import NumericProperty, StringProperty
+from kivy.uix.screenmanager import ScreenManager, Screen
 from kivymd.uix.segmentedbutton import MDSegmentedButtonItem
 from kivy.uix.modalview import ModalView
 from kivy.graphics.texture import Texture
@@ -18,6 +16,7 @@ import asynckivy
 import cv2
 import datetime
 import os
+
 # '''Change this back before push'''
 # Window.size = (400, 650)
 # image_paths_all = glob('C:/Users/user/Desktop/my_folder/.Statuses/*.jpg')
@@ -30,7 +29,8 @@ import os
 #I only use the phone for small adjustments
 
 ### -----  TODO  ----- ###
-#	Add saving ability for both images and videos
+#	Compile and test apk
+#	Navigation back to Home screen
 
 # --------END--------#
 
@@ -75,13 +75,12 @@ class Status:
                 os.makedirs("/sdcard/Statuses/Videos")
             Status(file_type, path)
 
-# class MyScreenManager(ScreenManager):
-# 	pass
 
 
 class HomeScreen(Screen):
 	def change_screen(self, screen):
 		self.manager.current = screen
+
 
 
 class ImageScreen(Screen):
@@ -171,7 +170,7 @@ class VideoScreen(Screen):
 			return
 		# Start loading asynchronously
 		asynckivy.start(self.async_load_thumbnails(video_path))
-		self.ids.vid_layout.clear_widgets()
+		# self.ids.vid_layout.clear_widgets()
 
 	def expand(self, src):
 		global video_view
@@ -180,6 +179,7 @@ class VideoScreen(Screen):
 		video_view.open()
 		global idx
 		idx = video_path.index(src)
+
 
 
 class VideoPopup(ModalView):
@@ -250,6 +250,7 @@ class VideoPopup(ModalView):
 		Status(file_type="video", file_path=self.video_source)
 
 
+
 class ImageViewer(ModalView):
 	image_source = StringProperty()
 
@@ -289,10 +290,6 @@ class StatusVideo(Video):
 		super()._on_eos(*largs)
 		self.parent.parent.play_next()
 
-
-class CustomSegment(MDSegmentedButtonItem):
-	def on_active(self, instance, value):
-		self.check_visible = False
 
 
 class ImageCard(MDCard):
