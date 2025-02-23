@@ -1,0 +1,17 @@
+asyncgui
+asynckivy
+certifi
+charset-normalizer
+docutils
+filetype
+idna
+Kivy==2.3.1
+Kivy-Garden
+kivymd @ https://github.com/kivymd/KivyMD/archive/master.zip#sha256=ab18d4cc36e2d53ea87f463d01299c39c75bae66cc1950f9bc6397f23317c848
+materialyoucolor
+numpy
+opencv-python
+pillow
+Pygments
+requests
+urllib3
