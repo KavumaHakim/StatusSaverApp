@@ -1,13 +1,12 @@
+#pylint:disable=C0103
 from kivy.uix.video import Video
 from kivy.uix.accordion import NumericProperty, StringProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivymd.uix.segmentedbutton import MDSegmentedButtonItem
 from kivy.uix.modalview import ModalView
 from kivy.graphics.texture import Texture
 from kivy.core.window import Window
 from kivymd.uix.card import MDCard
 from kivy.uix.image import Image
-from kivy.uix.video import Video
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivymd.app import MDApp
@@ -46,8 +45,10 @@ class Status:
         self.PICS = "/storage/emulated/0/Statuses/Pics"
         self.VIDS = "/storage/emulated/0/Statuses/Videos"
         self.types = ['video', 'pics']
-
-        if path not in glob("/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/.Statuses/*") + glob("/sdcard/Android/media/com.whatsapp/WhatsApp/Media/.Statuses/*"):
+        self.statuses = [i for i in glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*')]
+        
+        if path not in self.statuses:
+            print(path)
             raise FileNotFoundError(f"{path} - File not found among  Whatsapp Statuses")
         try:
             if file_type in self.types:
@@ -80,7 +81,6 @@ class Status:
 class HomeScreen(Screen):
 	def change_screen(self, screen):
 		self.manager.current = screen
-
 
 
 class ImageScreen(Screen):
@@ -130,7 +130,7 @@ class VideoScreen(Screen):
 		buf = frame.tobytes()
 		height, width, _ = frame.shape
 		texture = Texture.create(size=(width, height))			# Create image texture
-		texture.blit_buffer(buf, colorfmt = 'rgb', bufferfmt = 'ubyte')
+		texture.blit_buffer(buf, colorfmt = 'rgba', bufferfmt = 'ubyte')
 		return texture
 
 	async def async_load_thumbnails(self, video_list):
@@ -247,7 +247,9 @@ class VideoPopup(ModalView):
 		self.ids.video.state = 'play'
 
 	def save_video(self):
-		Status(file_type="video", file_path=self.video_source)
+		print(self.video_source)
+		Status(file_type="video", path=self.video_source)
+		
 
 
 
@@ -272,7 +274,7 @@ class ImageViewer(ModalView):
 		self.image_source = image_path[idx]
 
 	def save_img(self):
-		Status(file_type="pics", file_path=self.image_source)
+		Status(file_type="pics", path=self.image_source)
 
 
 
