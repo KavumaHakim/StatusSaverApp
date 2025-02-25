@@ -85,6 +85,11 @@ class HomeScreen(Screen):
 
 class ImageScreen(Screen):
 
+	def __init__(self, **kw):
+		super().__init__(**kw)
+		self.loader = None
+		self.change_content('all_tab')
+
 	async def async_load_images(self, image_list):
 		content_grid = self.ids.layout
 		content_grid.clear_widgets()
@@ -96,27 +101,36 @@ class ImageScreen(Screen):
 			await asynckivy.sleep(0.2)  # Lets Kivy process events
 
 	def change_content(self, tab):
+		if self.loader:
+			self.loader.cancel()
 		content_grid = self.ids.layout
 		content_grid.clear_widgets()
 		global image_path
 		if tab == 'all_tab':
+			self.ids["all_tab_button"].state = "down"
 			image_path = image_paths_all
 		elif tab == 'saved_tab':
+			self.ids["saved_tab_button"].state = "down"
 			image_path = image_paths_saved
 		else:
 			return
 		# Start loading asynchronously
-		asynckivy.start(self.async_load_images(image_path))
+		self.loader = asynckivy.start(self.async_load_images(image_path))
 
 	def expand(self, src):
 		global image_view
-		image_view.ids.view_img.source = src
+		image_view.image_source = src
 		image_view.open()
 		global idx
 		idx = image_path.index(src)
 
 
 class VideoScreen(Screen):
+
+	def __init__(self, **kw):
+		super().__init__(**kw)
+		self.loader = None
+		self.change_content('all_tab')
 
 	def generate_thumbnail(self, video, timestamp = .2):
 		cap = cv2.VideoCapture(video)
@@ -130,7 +144,7 @@ class VideoScreen(Screen):
 		buf = frame.tobytes()
 		height, width, _ = frame.shape
 		texture = Texture.create(size=(width, height))			# Create image texture
-		texture.blit_buffer(buf, colorfmt = 'rgba', bufferfmt = 'ubyte')
+		texture.blit_buffer(buf, colorfmt = 'rgb', bufferfmt = 'ubyte')
 		return texture
 
 	async def async_load_thumbnails(self, video_list):
@@ -159,18 +173,21 @@ class VideoScreen(Screen):
 			await asynckivy.sleep(0.1)  # Lets Kivy process events
 
 	def change_content(self, tab):
+		if self.loader:
+			self.loader.cancel()
 		global video_path
 		content_grid = self.ids.vid_layout
 		content_grid.clear_widgets()
 		if tab == 'all_tab':
+			self.ids["all_tab_button"].state = "down"
 			video_path = video_paths_all
 		elif tab == 'saved_tab':
+			self.ids["saved_tab_button"].state = "down"
 			video_path = video_paths_saved
 		else:
 			return
 		# Start loading asynchronously
-		asynckivy.start(self.async_load_thumbnails(video_path))
-		# self.ids.vid_layout.clear_widgets()
+		self.loader = asynckivy.start(self.async_load_thumbnails(video_path))
 
 	def expand(self, src):
 		global video_view

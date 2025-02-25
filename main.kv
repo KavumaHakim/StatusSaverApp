@@ -102,11 +102,14 @@
 			BoxLayout:
 				orientation: 'horizontal'
 				SegmentedButton:
+					id: all_tab_button
 					text: '[b]All[/b]'
 					markup: True
 					size_hint: (1, 1)
+					state: 'down'
 					on_release: root.change_content('all_tab')
 				SegmentedButton:
+					id: saved_tab_button
 					text: '[b]Saved[/b]'
 					markup: True
 					size_hint: (1, 1)
@@ -159,11 +162,14 @@
 			BoxLayout:
 				orientation: 'horizontal'
 				SegmentedButton:
+					id: all_tab_button
 					text: '[b]All[/b]'
 					markup: True
 					size_hint: (1, 1)
+					state: 'down'
 					on_release: root.change_content('all_tab')
 				SegmentedButton:
+					id: saved_tab_button
 					text: '[b]Saved[/b]'
 					markup: True
 					size_hint: (1, 1)
@@ -354,5 +360,4 @@
 	text_color: hex('#05b025')
 	on_state:
 		self.md_bg_color = hex('#05b025') if self.state == "down" else hex('#ffffff')
-		self.theme_text_color = 'Custom'
 		self.text_color = hex('#ffffff') if self.state == "down" else hex('#05b025')
