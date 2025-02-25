@@ -1,6 +1,6 @@
 #pylint:disable=C0103
 from kivy.uix.video import Video
-from kivy.uix.accordion import NumericProperty, StringProperty
+from kivy.uix.accordion import NumericProperty, StringProperty, BooleanProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.modalview import ModalView
 from kivy.graphics.texture import Texture
@@ -29,7 +29,9 @@ import os
 
 ### -----  TODO  ----- ###
 #	Compile and test apk
-#	Navigation back to Home screen
+# 	Delete functionality for saved statuses
+# 	Open Whatsapp functionality
+#	Fix the video screen errors
 
 # --------END--------#
 
@@ -79,8 +81,15 @@ class Status:
 
 
 class HomeScreen(Screen):
+
+	def open_whatsapp(self):
+		# ----------	Logic to open Whatsapp goes here	--------#
+		pass
+
 	def change_screen(self, screen):
+		self.manager.transition.direction = 'left'
 		self.manager.current = screen
+		self.manager.get_screen(screen).change_content('all_tab')
 
 
 class ImageScreen(Screen):
@@ -108,9 +117,11 @@ class ImageScreen(Screen):
 		global image_path
 		if tab == 'all_tab':
 			self.ids["all_tab_button"].state = "down"
+			self.ids["saved_tab_button"].state = "normal"
 			image_path = image_paths_all
 		elif tab == 'saved_tab':
 			self.ids["saved_tab_button"].state = "down"
+			self.ids["all_tab_button"].state = "normal"
 			image_path = image_paths_saved
 		else:
 			return
@@ -180,9 +191,11 @@ class VideoScreen(Screen):
 		content_grid.clear_widgets()
 		if tab == 'all_tab':
 			self.ids["all_tab_button"].state = "down"
+			self.ids["saved_tab_button"].state = "normal"
 			video_path = video_paths_all
 		elif tab == 'saved_tab':
 			self.ids["saved_tab_button"].state = "down"
+			self.ids["all_tab_button"].state = "normal"
 			video_path = video_paths_saved
 		else:
 			return
@@ -201,6 +214,7 @@ class VideoScreen(Screen):
 
 class VideoPopup(ModalView):
 	video_source = StringProperty()
+	is_saved = BooleanProperty()
 	progress = NumericProperty(0)
 	start_time = 1
 
@@ -209,6 +223,21 @@ class VideoPopup(ModalView):
 		self.bind(on_open=self._bind_video)
 		self.bind(on_pre_dismiss=self._close_video)
 		self.video_length = 1
+
+	def on_pre_open(self):
+		super().on_pre_open()
+		self.on_source()
+
+	def on_source(self):
+		with open(self.video_source, 'rb') as vid_data_src:
+			vid_data = vid_data_src.read()
+		for i in video_paths_saved:
+			with open(i, 'rb') as k:
+				saved_vid_data = k.read()
+			if saved_vid_data == vid_data:
+				self.is_saved = True
+				return
+		self.is_saved = False
 
 	def _bind_video(self, *args):
 		video = self.ids.video
@@ -253,6 +282,7 @@ class VideoPopup(ModalView):
 		self.video_source = video_path[idx]
 		self.load_first = False
 		self.ids.video.state = 'play'
+		self.on_source()
 
 	def play_previous(self):
 		global idx
@@ -262,16 +292,38 @@ class VideoPopup(ModalView):
 		self.video_source = video_path[idx]
 		self.load_first = False
 		self.ids.video.state = 'play'
+		self.on_source()
 
-	def save_video(self):
-		print(self.video_source)
-		Status(file_type="video", path=self.video_source)
+	def save_delete_video(self):
+		if self.ids['save_delete_icon'].icon == 'download':
+			Status(file_type="video", path=self.video_source)
+			global video_paths_saved
+			video_paths_saved = glob('/storage/emulated/0/Statuses/Videos/*.mp4')
+		elif self.ids['save_delete_icon'].icon == 'delete-empty':
+			# ++++++++++	Deleting logic goes here	+++++++++++ #
+			pass
 		
 
 
 
 class ImageViewer(ModalView):
 	image_source = StringProperty()
+	is_saved = BooleanProperty()
+	
+	def on_pre_open(self):
+		super().on_pre_open()
+		self.on_source()
+
+	def on_source(self):
+		with open(self.image_source, 'rb') as img_data_src:
+			img_data = img_data_src.read()
+		for i in image_paths_saved:
+			with open(i, 'rb') as k:
+				saved_img_data = k.read()
+			if saved_img_data == img_data:
+				self.is_saved = True
+				return
+		self.is_saved = False
 
 	def contract(self):
 		self.dismiss()
@@ -282,6 +334,7 @@ class ImageViewer(ModalView):
 		if idx >= len(image_path):
 			idx = len(image_path)-1
 		self.image_source = image_path[idx]
+		self.on_source()
 
 	def prev_img(self):
 		global idx
@@ -289,9 +342,16 @@ class ImageViewer(ModalView):
 		if idx < 0:
 			idx = 0
 		self.image_source = image_path[idx]
+		self.on_source()
 
-	def save_img(self):
-		Status(file_type="pics", path=self.image_source)
+	def save_delete_img(self):
+		if self.ids['save_delete_icon'].icon == 'download':
+			Status(file_type="pics", path=self.image_source)
+			global image_paths_saved
+			image_paths_saved = glob('/storage/emulated/0/Statuses/Pics/*.jpg')
+		elif self.ids['save_delete_icon'].icon == 'delete-empty':
+			# ++++++++++	Deleting logic goes here	+++++++++++ #
+			pass
 
 
 

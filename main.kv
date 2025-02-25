@@ -29,6 +29,7 @@
 			MDCard:
 				size_hint_y: .325
 				ripple_behavior: True
+				theme_bg_color: 'Custom'
 				md_bg_color: hex('#e0e0e0')
 				on_release: root.change_screen('video_screen')
 				Image:
@@ -38,6 +39,7 @@
 			MDCard:
 				size_hint_y: .325
 				ripple_behavior: True
+				theme_bg_color: 'Custom'
 				md_bg_color: hex('#e0e0e0')
 				on_release: root.change_screen('image_screen')
 				Image:
@@ -49,6 +51,7 @@
 				ripple_behavior: True
 				theme_bg_color: 'Custom'
 				md_bg_color: hex('#05b025')
+				on_release: root.open_whatsapp()
 				Label:
 					text: 'Open WhatApp'
 					color: 1, 1, 1, 1
@@ -65,7 +68,7 @@
 			id: view_port
 			do_scroll_x: False
 			size_hint_y: None
-			height: (root.height - navigation.height - 20)
+			height: (root.height - navigation.height - 50)
 			pos_hint: {'bottom': 1}
 			GridLayout:
 				id: layout
@@ -76,12 +79,33 @@
 				pos_hint: {'center_x': .5, 'center_y': .5}
 				height: self.minimum_height
 
+		MDIconButton:
+			canvas.before:
+				Color:
+					rgba: hex('#05b025')
+				RoundedRectangle:
+					pos: self.pos
+					size: self.size
+					radius: [0, 50, 50, 0]
+			icon: 'home'
+			theme_icon_color: 'Custom'
+			icon_color: hex('#ffffff')
+			size_hint: (None, None)
+			icon_size: 50
+			height: 100
+			width: 100
+			pos_hint: {'top': .97, 'left': 1}
+			on_release:
+				root.loader.cancel() if root.loader else print()
+				root.manager.transition.direction = 'right'
+				root.manager.current = 'home'
+
 		MDCard:
 			id: navigation
 			size_hint: .6, None
-			height: 80
-			radius: 40
-			pos_hint: {'center_x': .5, 'top': .99}
+			height: 100
+			radius: 50
+			pos_hint: {'center_x': .5, 'top': .98}
 			canvas.before:
 				PushMatrix
 				StencilPush
@@ -98,7 +122,7 @@
 					rgba: hex('#05b025')
 				Line:
 					width: 2  # Border thickness
-					rounded_rectangle: (self.x, self.y, self.width, self.height, 40)
+					rounded_rectangle: (self.x, self.y, self.width, self.height, 50)
 			BoxLayout:
 				orientation: 'horizontal'
 				SegmentedButton:
@@ -135,6 +159,27 @@
 				size_hint_y: None
 				pos_hint: {'center_x': .5, 'center_y': .5}
 				height: self.minimum_height
+
+		MDIconButton:
+			canvas.before:
+				Color:
+					rgba: hex('#05b025')
+				RoundedRectangle:
+					pos: self.pos
+					size: self.size
+					radius: [0, 50, 50, 0]
+			icon: 'home'
+			theme_icon_color: 'Custom'
+			icon_color: hex('#ffffff')
+			size_hint: (None, None)
+			icon_size: 50
+			height: 100
+			width: 100
+			pos_hint: {'top': .97, 'left': 1}
+			on_release:
+				root.loader.cancel() if root.loader else print()
+				root.manager.transition.direction = 'right'
+				root.manager.current = 'home'
 
 		MDCard:
 			id: navigation
@@ -217,13 +262,14 @@
 			pos_hint: {'bottom': 1, 'center_x': .3}
 			on_release: root.prev_img()
 		MDIconButton:
-			icon: 'download'
+			id: save_delete_icon
+			icon: 'download' if root.is_saved == False else 'delete-empty'
 			theme_icon_color: 'Custom'
 			icon_color: (0, 1, 0, 1)
 			size_hint: (.2, None)
 			height: 80
 			pos_hint: {'bottom': 1, 'center_x': .5}
-			on_release: root.save_img()
+			on_release: root.save_delete_img()
 		MDIconButton:
 			icon: 'skip-next'
 			theme_icon_color: 'Custom'
@@ -282,13 +328,14 @@
 			height: 4
 			
 		MDIconButton:
-			icon: 'download'
+			id: save_delete_icon
+			icon: 'download' if root.is_saved == False else 'delete-empty'
 			theme_icon_color: 'Custom'
 			icon_color: (0, 1, 0, 1)
 			size_hint: (.15, None)
 			height: 40
 			pos_hint: {'top': 1, 'right': 1}
-			on_release: root.save_video()
+			on_release: root.save_delete_video()
 
 		Widget: 
 			pos_hint: {'bottom': 1, 'center_x': .5}
