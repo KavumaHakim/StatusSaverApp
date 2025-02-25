@@ -11,9 +11,10 @@ from kivy.lang import Builder
 from kivy.clock import Clock
 from kivymd.app import MDApp
 from glob import glob
+import numpy as np
 import asynckivy
-import cv2
 import datetime
+import cv2
 import os
 
 # '''Change this back before push'''
@@ -150,12 +151,14 @@ class VideoScreen(Screen):
 		cap.release()
 		if not success:
 			return None
-		frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)			# Convert BGR to RGB color format
-		frame = cv2.flip(frame, 0)								# Flip image vertically. (FIX)
-		buf = frame.tobytes()
-		height, width, _ = frame.shape
-		texture = Texture.create(size=(width, height))			# Create image texture
-		texture.blit_buffer(buf, colorfmt = 'rgb', bufferfmt = 'ubyte')
+		frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)			# Convert BGR to RGB color format
+		height, width, _ = frame_rgb.shape
+		alpha_channel = 255 * np.ones((height, width, 1), dtype=np.uint8)	# Generate alpha channel with full opacity
+		frame_rgba = np.concatenate((frame_rgb, alpha_channel), axis=2)		# Add alpha channel (rgb to rgba)
+		buf = frame_rgba.tobytes()
+		texture = Texture.create(size=(width, height), colorfmt='rgba')			# Create image texture
+		texture.blit_buffer(buf, colorfmt = 'rgba', bufferfmt = 'ubyte')
+		texture.flip_vertical()
 		return texture
 
 	async def async_load_thumbnails(self, video_list):

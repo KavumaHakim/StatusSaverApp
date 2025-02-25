@@ -1,5 +1,6 @@
 asyncgui
 asynckivy
+numpy
 certifi
 charset-normalizer
 docutils
