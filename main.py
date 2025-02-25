@@ -11,7 +11,7 @@ from kivy.lang import Builder
 from kivy.clock import Clock
 from kivymd.app import MDApp
 from glob import glob
-import numpy as np
+# import numpy as np
 import asynckivy
 import datetime
 import cv2
@@ -151,11 +151,14 @@ class VideoScreen(Screen):
 		cap.release()
 		if not success:
 			return None
-		frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)			# Convert BGR to RGB color format
-		height, width, _ = frame_rgb.shape
-		alpha_channel = 255 * np.ones((height, width, 1), dtype=np.uint8)	# Generate alpha channel with full opacity
-		frame_rgba = np.concatenate((frame_rgb, alpha_channel), axis=2)		# Add alpha channel (rgb to rgba)
-		buf = frame_rgba.tobytes()
+#		frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)			# Convert BGR to RGB color format
+		frame = cv2.cvtColor(frame, cv2.COLOR_BGR2BGRA)
+		height, width, _ = frame.shape
+		buf = frame.tobytes()
+#		height, width, _ = frame_rgb.shape
+#		alpha_channel = 255 * np.ones((height, width, 1), dtype=np.uint8)	# Generate alpha channel with full opacity
+#		frame_rgba = np.concatenate((frame_rgb, alpha_channel), axis=2)		# Add alpha channel (rgb to rgba)
+#		buf = frame_rgba.tobytes()
 		texture = Texture.create(size=(width, height), colorfmt='rgba')			# Create image texture
 		texture.blit_buffer(buf, colorfmt = 'rgba', bufferfmt = 'ubyte')
 		texture.flip_vertical()
