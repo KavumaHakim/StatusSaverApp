@@ -85,7 +85,7 @@ class HomeScreen(Screen):
 
 	def open_whatsapp(self):
 		# ----------	Logic to open Whatsapp goes here	--------#
-		pass
+		os.system('am start -n com.whatsapp/com.whatsapp.HomeActivity')
 
 	def change_screen(self, screen):
 		self.manager.transition.direction = 'left'
