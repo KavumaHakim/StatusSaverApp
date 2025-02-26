@@ -1,4 +1,3 @@
-#pylint:disable=C0103
 from kivy.uix.video import Video
 from kivy.uix.accordion import NumericProperty, StringProperty, BooleanProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -11,7 +10,6 @@ from kivy.lang import Builder
 from kivy.clock import Clock
 from kivymd.app import MDApp
 from glob import glob
-# import numpy as np
 import asynckivy
 import datetime
 import cv2
