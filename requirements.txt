@@ -5,6 +5,7 @@ certifi
 charset-normalizer
 docutils
 filetype
+ffpyplayer
 idna
 # Kivy==2.3.1
 Kivy
