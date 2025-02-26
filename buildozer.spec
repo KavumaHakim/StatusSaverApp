@@ -7,7 +7,7 @@ title = StatusSaver
 package.name = StatusSaver
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.statussaver
+package.domain = com.statussaver
 
 # (str) Source code where the main.py live
 source.dir = .
