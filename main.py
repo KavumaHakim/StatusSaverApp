@@ -15,6 +15,8 @@ import datetime
 import cv2
 import os
 from kivy import platform
+import itertools
+
 # '''Change this back before push'''
 # Window.size = (400, 650)
 # image_paths_all = glob('C:/Users/user/Desktop/my_folder/.Statuses/*.jpg')
@@ -33,11 +35,17 @@ from kivy import platform
 #	Fix the video screen errors
 
 # --------END--------#
-
-image_paths_all = glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*.jpg') 
+# add support for gbwhatsapp
+image_paths_whatsapp = glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*.jpg')
+image_paths_gbwhatsapp = glob('/storage/emulated/0/Android/media/com.gbwhatsapp/Whatsapp/Media/.Statuses/*.jpg') 
 image_paths_saved = glob('/storage/emulated/0/Statuses/Pics/*.jpg')
-video_paths_all = glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*.mp4')
+
+video_paths_whatsapp = glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*.mp4')
+video_paths_gbwhatsapp = glob('/storage/emulated/0/Android/media/com.gbwhatsapp/Whatsapp/Media/.Statuses/*.mp4')
 video_paths_saved = glob('/storage/emulated/0/Statuses/Videos/*.mp4')
+
+image_paths_all = list(itertools.chain(image_paths_whatsapp, image_paths_gbwhatsapp))
+video_paths_all = list(itertools.chain(video_paths_whatsapp, video_paths_gbwhatsapp))
 
 if platform == "android":
     from android.permissions import request_permissions, Permission, check_permission
@@ -50,9 +58,9 @@ class Status:
         self.PICS = "/storage/emulated/0/Statuses/Pics"
         self.VIDS = "/storage/emulated/0/Statuses/Videos"
         self.types = ['video', 'pics']
-        self.statuses = [i for i in glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*')]
-        
-        if path not in self.statuses:
+        self.statuses_whatsapp = [i for i in glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*')]
+        self.statuses_gbwhatsapp = [i for i in glob('/storage/emulated/0/Android/media/com.gbwhatsapp/Whatsapp/Media/.Statuses/*')]
+        if path not in self.statuses_whatsapp or path not in self.statuses_gbwhatsapp:
             print(path)
             raise FileNotFoundError(f"{path} - File not found among  Whatsapp Statuses")
         try:
