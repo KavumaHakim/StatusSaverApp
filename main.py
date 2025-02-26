@@ -304,7 +304,6 @@ class VideoPopup(ModalView):
 			global video_paths_saved
 			video_paths_saved = glob('/storage/emulated/0/Statuses/Videos/*.mp4')
 		elif self.ids['save_delete_icon'].icon == 'delete-empty':
-			# ++++++++++	Deleting logic goes here	+++++++++++ #
 			if os.path.exists(self.video_source):
 				os.remove(self.video_source)
 		
@@ -355,7 +354,6 @@ class ImageViewer(ModalView):
 			global image_paths_saved
 			image_paths_saved = glob('/storage/emulated/0/Statuses/Pics/*.jpg')
 		elif self.ids['save_delete_icon'].icon == 'delete-empty':
-			# ++++++++++	Deleting logic goes here	+++++++++++ #
 			if os.path.exists(self.image_source):
 				os.remove(self.image_source)
 
