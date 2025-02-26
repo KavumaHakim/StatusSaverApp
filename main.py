@@ -14,7 +14,7 @@ import asynckivy
 import datetime
 import cv2
 import os
-
+from kivy import platform
 # '''Change this back before push'''
 # Window.size = (400, 650)
 # image_paths_all = glob('C:/Users/user/Desktop/my_folder/.Statuses/*.jpg')
@@ -27,18 +27,22 @@ import os
 #I only use the phone for small adjustments
 
 ### -----  TODO  ----- ###
-#	Compile and test apk
-# 	Delete functionality for saved statuses
+#	Compile and test apk [done]
+# 	Delete functionality for saved statuses [done]
 # 	Open Whatsapp functionality
 #	Fix the video screen errors
 
 # --------END--------#
 
-image_paths_all = glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*.jpg')
+image_paths_all = glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*.jpg') 
 image_paths_saved = glob('/storage/emulated/0/Statuses/Pics/*.jpg')
 video_paths_all = glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*.mp4')
 video_paths_saved = glob('/storage/emulated/0/Statuses/Videos/*.mp4')
 
+if platform == "android":
+    from android.permissions import request_permissions, Permission, check_permission
+    request_permissions([Permission.READ_EXTERNAL_STORAGE,
+                        Permission.WRITE_EXTERNAL_STORAGE])
 
 class Status:
     def __init__(self,file_type:str ="video", path:str = ''):
