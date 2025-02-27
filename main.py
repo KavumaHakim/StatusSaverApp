@@ -17,6 +17,10 @@ import cv2
 import os
 import itertools
 
+if platform == "android":
+    from android.permissions import request_permissions, Permission, check_permission
+    request_permissions([Permission.READ_EXTERNAL_STORAGE,
+                        Permission.WRITE_EXTERNAL_STORAGE])
 # '''Change this back before push'''
 # Window.size = (400, 650)
 # image_paths_all = glob('C:/Users/user/Desktop/my_folder/.Statuses/*.jpg')
@@ -39,7 +43,6 @@ import itertools
 image_paths_whatsapp = glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*.jpg')
 image_paths_gbwhatsapp = glob('/storage/emulated/0/Android/media/com.gbwhatsapp/Whatsapp/Media/.Statuses/*.jpg') 
 image_paths_saved = glob('/storage/emulated/0/Statuses/Pics/*.jpg')
-
 video_paths_whatsapp = glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*.mp4')
 video_paths_gbwhatsapp = glob('/storage/emulated/0/Android/media/com.gbwhatsapp/Whatsapp/Media/.Statuses/*.mp4')
 video_paths_saved = glob('/storage/emulated/0/Statuses/Videos/*.mp4')
@@ -47,10 +50,7 @@ video_paths_saved = glob('/storage/emulated/0/Statuses/Videos/*.mp4')
 image_paths_all = list(itertools.chain(image_paths_whatsapp, image_paths_gbwhatsapp))
 video_paths_all = list(itertools.chain(video_paths_whatsapp, video_paths_gbwhatsapp))
 
-if platform == "android":
-    from android.permissions import request_permissions, Permission, check_permission
-    request_permissions([Permission.READ_EXTERNAL_STORAGE,
-                        Permission.WRITE_EXTERNAL_STORAGE])
+
 
 class Status:
     def __init__(self,file_type:str ="video", path:str = ''):
