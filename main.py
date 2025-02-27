@@ -1,20 +1,20 @@
-from kivy.uix.video import Video
 from kivy.uix.accordion import NumericProperty, StringProperty, BooleanProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.modalview import ModalView
 from kivy.graphics.texture import Texture
 from kivy.core.window import Window
+from kivy.uix.modalview import ModalView
 from kivymd.uix.card import MDCard
 from kivy.uix.image import Image
+from kivy.uix.video import Video
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivymd.app import MDApp
+from kivy import platform
 from glob import glob
 import asynckivy
 import datetime
 import cv2
 import os
-from kivy import platform
 import itertools
 
 # '''Change this back before push'''
@@ -93,23 +93,27 @@ class Status:
 
 class HomeScreen(Screen):
 
+	def initialize_display(self):
+		video_screen = self.manager.get_screen("video_screen")
+		first_thumbnail = video_screen.generate_thumbnail(video_paths_all[0])
+		self.ids['vid_backlay'].texture = first_thumbnail
+		self.ids['img_backlay'].source = image_paths_all[0]
+
 	def open_whatsapp(self):
 		# ----------	Logic to open Whatsapp goes here	--------#
 		os.system('am start -n com.whatsapp/com.whatsapp.HomeActivity')
 
 	def change_screen(self, screen):
 		self.manager.transition.direction = 'left'
+		self.manager.transition.duration = .1
 		self.manager.current = screen
-		self.manager.get_screen(screen).change_content('all_tab')
+		current_screen = self.manager.get_screen(screen)
+		current_screen.change_content('all_tab')
 
 
 class ImageScreen(Screen):
-
-	def __init__(self, **kw):
-		super().__init__(**kw)
-		self.loader = None
-		self.change_content('all_tab')
-
+	loader = None
+	
 	async def async_load_images(self, image_list):
 		content_grid = self.ids.layout
 		content_grid.clear_widgets()
@@ -148,11 +152,7 @@ class ImageScreen(Screen):
 
 
 class VideoScreen(Screen):
-
-	def __init__(self, **kw):
-		super().__init__(**kw)
-		self.loader = None
-		self.change_content('all_tab')
+	loader = None
 
 	def generate_thumbnail(self, video, timestamp = .2):
 		cap = cv2.VideoCapture(video)
@@ -161,14 +161,9 @@ class VideoScreen(Screen):
 		cap.release()
 		if not success:
 			return None
-#		frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)			# Convert BGR to RGB color format
 		frame = cv2.cvtColor(frame, cv2.COLOR_BGR2BGRA)
 		height, width, _ = frame.shape
 		buf = frame.tobytes()
-#		height, width, _ = frame_rgb.shape
-#		alpha_channel = 255 * np.ones((height, width, 1), dtype=np.uint8)	# Generate alpha channel with full opacity
-#		frame_rgba = np.concatenate((frame_rgb, alpha_channel), axis=2)		# Add alpha channel (rgb to rgba)
-#		buf = frame_rgba.tobytes()
 		texture = Texture.create(size=(width, height), colorfmt='rgba')			# Create image texture
 		texture.blit_buffer(buf, colorfmt = 'rgba', bufferfmt = 'ubyte')
 		texture.flip_vertical()
@@ -409,9 +404,10 @@ class StatusSaverApp(MDApp):
 		global video_view
 		image_view = ImageViewer()
 		video_view = VideoPopup()
-		my_manager.add_widget(home_screen)
 		my_manager.add_widget(image_screen)
 		my_manager.add_widget(video_screen)
+		my_manager.add_widget(home_screen)
+		home_screen.initialize_display()
 		my_manager.current = 'home'
 		return my_manager
 

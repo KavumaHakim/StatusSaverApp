@@ -11,13 +11,15 @@
 			orientation: 'vertical'
 			padding: [20, 70]
 			spacing: 40
+
 			MDCard:
+				id: display_label
 				size_hint_y: .25
 				theme_bg_color: 'Custom'
 				md_bg_color: hex('#05b025')
 				FloatLayout:
 					Image:
-						source:'whatsapp-icon.png'
+						source:'./assets/whatsapp-icon.png'
 						size_hint: (.2, .2)
 						pos_hint: {'center_x': .1, 'center_y': .8}
 					Label:
@@ -26,26 +28,67 @@
 						font_size: 80
 						bold: True
 						pos_hint: {'center_x': .5, 'center_y': .5}
+
 			MDCard:
 				size_hint_y: .325
 				ripple_behavior: True
 				theme_bg_color: 'Custom'
 				md_bg_color: hex('#e0e0e0')
 				on_release: root.change_screen('video_screen')
-				Image:
-					source: 'video-play-icon.png'
-					size_hint: (.5, .5)
-					pos_hint: {'center_x': .5, 'center_y': .5}
+				canvas.before:
+					PushMatrix
+					StencilPush
+					RoundedRectangle:
+						pos: self.pos
+						size: self.size
+						radius: self.radius  
+					StencilUse
+				canvas.after:
+					StencilUnUse
+					StencilPop
+					PopMatrix
+				FloatLayout:
+					Image:
+						id: vid_backlay
+						fit_mode: 'cover'
+						color: (.5, .5, .5, 1)
+						size_hint: (1, 1)
+						pos_hint: {'center_x': .5, 'center_y': .5}
+					Image:
+						source: './assets/grey-video-icon.png'
+						size_hint: (1, 1)
+						pos_hint: {'center_x': .5, 'center_y': .5}
+
 			MDCard:
 				size_hint_y: .325
 				ripple_behavior: True
 				theme_bg_color: 'Custom'
 				md_bg_color: hex('#e0e0e0')
 				on_release: root.change_screen('image_screen')
-				Image:
-					source: 'green_pic_icon.png'
-					size_hint: (.5, .5)
-					pos_hint: {'center_x': .5, 'center_y': .5}
+				canvas.before:
+					PushMatrix
+					StencilPush
+					RoundedRectangle:
+						pos: self.pos
+						size: self.size
+						radius: self.radius  
+					StencilUse
+				canvas.after:
+					StencilUnUse
+					StencilPop
+					PopMatrix
+				FloatLayout:
+					Image:
+						id: img_backlay
+						fit_mode: 'cover'
+						color: (.5, .5, .5, 1)
+						size_hint: (1, 1)
+						pos_hint: {'center_x': .5, 'center_y': .5}
+					Image:
+						source: './assets/grey-images-icon.png'
+						size_hint: (1, 1)
+						pos_hint: {'center_x': .5, 'center_y': .5}
+
 			MDCard:
 				size_hint_y: .1
 				ripple_behavior: True
@@ -227,7 +270,7 @@
 	auto_dismiss: True
 	radius: 10
 	overlay_color: (.5, .5, .5, .3)
-	background_color: (1, 1, 1, .9)
+	background_color: (1, 1, 1, 1)
 	background: ''
 	RelativeLayout:
 		Image:
@@ -286,7 +329,7 @@
 	auto_dismiss: True
 	radius: 10
 	overlay_color: (.5, .5, .5, .3)
-	background_color: (1, 1, 1, .9)
+	background_color: (1, 1, 1, 1)
 	background: ''
 
 	RelativeLayout:
