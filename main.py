@@ -50,8 +50,7 @@ video_paths_all = list(itertools.chain(video_paths_whatsapp, video_paths_gbwhats
 if platform == "android":
     from android.permissions import request_permissions, Permission, check_permission
     request_permissions([Permission.READ_EXTERNAL_STORAGE,
-                        Permission.WRITE_EXTERNAL_STORAGE,
-						Permission.MANAGE_EXTERNAL_STORAGE])
+                        Permission.WRITE_EXTERNAL_STORAGE])
 
 class Status:
     def __init__(self,file_type:str ="video", path:str = ''):
