@@ -311,8 +311,12 @@ class VideoPopup(ModalView):
 			global video_paths_saved
 			video_paths_saved = glob('/storage/emulated/0/Statuses/Videos/*.mp4')
 		elif self.ids['save_delete_icon'].icon == 'delete-empty':
-			if os.path.exists(self.video_source):
-				os.remove(self.video_source)
+			with open(self.video_source,mode='rb') as vv:
+				viewed_vid = vv.read()
+			for i in video_paths_saved:
+				with open(i,mode='rb') as vs:
+					if vs.read() == viewed_vid:
+						os.remove(i)
 		
 
 
