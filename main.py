@@ -17,10 +17,32 @@ import cv2
 import os
 import itertools
 
-if platform == "android":
-    from android.permissions import request_permissions, Permission, check_permission
-    request_permissions([Permission.READ_EXTERNAL_STORAGE,
-                        Permission.WRITE_EXTERNAL_STORAGE])
+def requestAccessToAllFiles():
+    from jnius import autoclass
+    PythonActivity = autoclass('org.kivy.android.PythonActivity')
+    Environment = autoclass('android.os.Environment')
+    Uri = autoclass('android.net.Uri')
+    Intent = autoclass('android.content.Intent')
+    Settings = autoclass('android.provider.Settings')
+    mActivity = PythonActivity.mActivity
+    if not Environment.isExternalStorageManager(): # Checks if already Managing stroage
+        intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+        intent.setData(Uri.parse(f"package:{mActivity.getPackageName()}")) # package:package.domain.package.name
+        mActivity.startActivity(intent)
+		
+from android.permissions import request_permissions, Permission
+
+def request_storage_permissions():
+    # Normal storage permissions
+    request_permissions([
+        Permission.READ_EXTERNAL_STORAGE,
+        Permission.WRITE_EXTERNAL_STORAGE
+    ])
+
+request_storage_permisions()
+
+requestAccessToAllFiles()
+
 # '''Change this back before push'''
 # Window.size = (400, 650)
 # image_paths_all = glob('C:/Users/user/Desktop/my_folder/.Statuses/*.jpg')
