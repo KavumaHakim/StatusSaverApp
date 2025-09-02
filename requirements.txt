@@ -19,3 +19,4 @@ pillow
 Pygments
 requests
 urllib3
+pyjnius
