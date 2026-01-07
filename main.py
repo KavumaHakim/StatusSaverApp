@@ -195,6 +195,9 @@ class Status:
 class HomeScreen(Screen):
 
     def initialize_display(self):
+        if not video_paths_all or not image_paths_all:
+            print("Media paths not loaded yet!")
+            return
         video_screen = self.manager.get_screen("video_screen")
         first_thumbnail = video_screen.generate_thumbnail(video_paths_all[0])
         self.ids["vid_backlay"].texture = first_thumbnail
