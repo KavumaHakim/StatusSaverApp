@@ -17,31 +17,85 @@ import cv2
 import os
 import itertools
 
-def requestAccessToAllFiles():
+
+
+def get_whatsapp_images():
     from jnius import autoclass
+
+    MediaStore = autoclass('android.provider.MediaStore')
     PythonActivity = autoclass('org.kivy.android.PythonActivity')
-    Environment = autoclass('android.os.Environment')
-    Uri = autoclass('android.net.Uri')
-    Intent = autoclass('android.content.Intent')
-    Settings = autoclass('android.provider.Settings')
-    mActivity = PythonActivity.mActivity
-    if not Environment.isExternalStorageManager(): # Checks if already Managing stroage
-        intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-        intent.setData(Uri.parse(f"package:{mActivity.getPackageName()}")) # package:package.domain.package.name
-        mActivity.startActivity(intent)
-		
-from android.permissions import request_permissions, Permission
+    activity = PythonActivity.mActivity
 
-def request_storage_permissions():
-    # Normal storage permissions
-    request_permissions([
-        Permission.READ_EXTERNAL_STORAGE,
-        Permission.WRITE_EXTERNAL_STORAGE
-    ])
+    resolver = activity.getContentResolver()
+    uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
-request_storage_permisions()
+    projection = [MediaStore.Images.Media.DATA]
+    selection = MediaStore.Images.Media.DATA + " LIKE ?"
+    selection_args = ["%WhatsApp/Media/.Statuses/%"]
 
-requestAccessToAllFiles()
+    cursor = resolver.query(uri, projection, selection, selection_args, None)
+
+    paths = []
+    if cursor:
+        while cursor.moveToNext():
+            paths.append(cursor.getString(0))
+        cursor.close()
+
+    return paths
+
+
+
+def get_whatsapp_videos():
+    from jnius import autoclass
+
+    MediaStore = autoclass('android.provider.MediaStore')
+    PythonActivity = autoclass('org.kivy.android.PythonActivity')
+    activity = PythonActivity.mActivity
+
+    resolver = activity.getContentResolver()
+    uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+
+    projection = [MediaStore.Video.Media.DATA]
+    selection = MediaStore.Video.Media.DATA + " LIKE ?"
+    selection_args = ["%WhatsApp/Media/.Statuses/%"]
+
+    cursor = resolver.query(uri, projection, selection, selection_args, None)
+
+    paths = []
+    if cursor:
+        while cursor.moveToNext():
+            paths.append(cursor.getString(0))
+        cursor.close()
+
+    return paths
+
+
+def load_whatsapp_media():
+    global image_paths_all, video_paths_all
+
+    image_paths_all = get_whatsapp_images()
+    video_paths_all = get_whatsapp_videos()
+
+
+def ensure_media_permissions(callback):
+    from android.permissions import request_permissions, Permission
+    from jnius import autoclass
+
+    Build = autoclass('android.os.Build')
+    sdk = Build.VERSION.SDK_INT
+
+    if sdk >= 33:
+        request_permissions([
+            Permission.READ_MEDIA_IMAGES,
+            Permission.READ_MEDIA_VIDEO
+        ], lambda *_: callback())
+    else:
+        request_permissions([
+            Permission.READ_EXTERNAL_STORAGE
+        ], lambda *_: callback())
+
+
+
 
 # '''Change this back before push'''
 # Window.size = (400, 650)
@@ -62,15 +116,15 @@ requestAccessToAllFiles()
 
 # --------END--------#
 # add support for gbwhatsapp
-image_paths_whatsapp = glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*.jpg')
-image_paths_gbwhatsapp = glob('/storage/emulated/0/Android/media/com.gbwhatsapp/Whatsapp/Media/.Statuses/*.jpg') 
-image_paths_saved = glob('/storage/emulated/0/Statuses/Pics/*.jpg')
-video_paths_whatsapp = glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*.mp4')
-video_paths_gbwhatsapp = glob('/storage/emulated/0/Android/media/com.gbwhatsapp/Whatsapp/Media/.Statuses/*.mp4')
-video_paths_saved = glob('/storage/emulated/0/Statuses/Videos/*.mp4')
+# image_paths_whatsapp = glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*.jpg')
+# image_paths_gbwhatsapp = glob('/storage/emulated/0/Android/media/com.gbwhatsapp/Whatsapp/Media/.Statuses/*.jpg') 
+# image_paths_saved = glob('/storage/emulated/0/Statuses/Pics/*.jpg')
+# video_paths_whatsapp = glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*.mp4')
+# video_paths_gbwhatsapp = glob('/storage/emulated/0/Android/media/com.gbwhatsapp/Whatsapp/Media/.Statuses/*.mp4')
+# video_paths_saved = glob('/storage/emulated/0/Statuses/Videos/*.mp4')
 
-image_paths_all = list(itertools.chain(image_paths_whatsapp, image_paths_gbwhatsapp))
-video_paths_all = list(itertools.chain(video_paths_whatsapp, video_paths_gbwhatsapp))
+# image_paths_all = list(itertools.chain(image_paths_whatsapp, image_paths_gbwhatsapp))
+# video_paths_all = list(itertools.chain(video_paths_whatsapp, video_paths_gbwhatsapp))
 
 
 
@@ -119,7 +173,9 @@ class HomeScreen(Screen):
 		video_screen = self.manager.get_screen("video_screen")
 		first_thumbnail = video_screen.generate_thumbnail(video_paths_all[0])
 		self.ids['vid_backlay'].texture = first_thumbnail
-		self.ids['img_backlay'].source = image_paths_all[0]
+		
+		if image_paths_all:
+        	self.ids['img_backlay'].source = image_paths_all[0]
 
 	def open_whatsapp(self):
 		# ----------	Logic to open Whatsapp goes here	--------#
@@ -440,6 +496,12 @@ class StatusSaverApp(MDApp):
 		home_screen.initialize_display()
 		my_manager.current = 'home'
 		return my_manager
+	def on_start(self):
+        ensure_media_permissions(self.after_permissions)
+
+    def after_permissions(self):
+        load_whatsapp_media()
+        self.root.get_screen("home").initialize_display()
 
 
 
