@@ -128,42 +128,77 @@ def ensure_media_permissions(callback):
 
 
 
+# class Status:
+#     def __init__(self,file_type:str ="video", path:str = ''):
+#         self.ANDROID = glob("/storage/emulated/0/*")
+#         self.PICS = "/storage/emulated/0/Statuses/Pics"
+#         self.VIDS = "/storage/emulated/0/Statuses/Videos"
+#         self.types = ['video', 'pics']
+#         self.statuses_whatsapp = [i for i in glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*')]
+#         self.statuses_gbwhatsapp = [i for i in glob('/storage/emulated/0/Android/media/com.gbwhatsapp/Whatsapp/Media/.Statuses/*')]
+#         if path not in self.statuses_whatsapp or path not in self.statuses_gbwhatsapp:
+#             print(path)
+#             raise FileNotFoundError(f"{path} - File not found among  Whatsapp Statuses")
+#         try:
+#             if file_type in self.types:
+#                 if file_type == "video":
+#                     n = self.VIDS
+#                 elif (file_type == 'pics'):
+#                     n = self.PICS
+#                 date_made = datetime.datetime.fromtimestamp(os.path.getmtime(path))
+#                 extension = os.path.splitext(path)[1]
+#                 new_name = f"{date_made.strftime('%Y-%m-%d %H:%M:%S')}{extension}"
+#                 new_file_path = os.path.join(n, new_name)
+#                 with open(path, 'rb') as f:
+#                     video = f.read()
+#                 with open(new_file_path, "wb") as f:
+#                     f.write(video)
+#             else:
+#                 raise ValueError(f"{file_type} - Not known: valid values are 'video', 'pics'")
+#         except FileNotFoundError :
+#             if "/storage/emulated/0/Statuses" in self.ANDROID:
+#                 print("Statuses folder Exists")
+#             else:
+#                 print("Making Statuses Folder")
+#                 os.makedirs("/sdcard/Statuses")
+#                 os.makedirs("/sdcard/Statuses/Pics")
+#                 os.makedirs("/sdcard/Statuses/Videos")
+#             Status(file_type, path)
+
+
+
 class Status:
-    def __init__(self,file_type:str ="video", path:str = ''):
-        self.ANDROID = glob("/storage/emulated/0/*")
+    def __init__(self, file_type: str = "video", path: str = ''):
+        from jnius import autoclass
+
+        PythonActivity = autoclass('org.kivy.android.PythonActivity')
+        activity = PythonActivity.mActivity
+        resolver = activity.getContentResolver()
+
         self.PICS = "/storage/emulated/0/Statuses/Pics"
         self.VIDS = "/storage/emulated/0/Statuses/Videos"
-        self.types = ['video', 'pics']
-        self.statuses_whatsapp = [i for i in glob('/storage/emulated/0/Android/media/com.whatsapp/Whatsapp/Media/.Statuses/*')]
-        self.statuses_gbwhatsapp = [i for i in glob('/storage/emulated/0/Android/media/com.gbwhatsapp/Whatsapp/Media/.Statuses/*')]
-        if path not in self.statuses_whatsapp or path not in self.statuses_gbwhatsapp:
-            print(path)
-            raise FileNotFoundError(f"{path} - File not found among  Whatsapp Statuses")
+
+        os.makedirs(self.PICS, exist_ok=True)
+        os.makedirs(self.VIDS, exist_ok=True)
+
+        if file_type == "video":
+            target_dir = self.VIDS
+        elif file_type == "pics":
+            target_dir = self.PICS
+        else:
+            raise ValueError("file_type must be 'video' or 'pics'")
+
+        extension = os.path.splitext(path)[1]
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        new_file_path = os.path.join(target_dir, f"{timestamp}{extension}")
+
+        #  SAFELY COPY FILE
         try:
-            if file_type in self.types:
-                if file_type == "video":
-                    n = self.VIDS
-                elif (file_type == 'pics'):
-                    n = self.PICS
-                date_made = datetime.datetime.fromtimestamp(os.path.getmtime(path))
-                extension = os.path.splitext(path)[1]
-                new_name = f"{date_made.strftime('%Y-%m-%d %H:%M:%S')}{extension}"
-                new_file_path = os.path.join(n, new_name)
-                with open(path, 'rb') as f:
-                    video = f.read()
-                with open(new_file_path, "wb") as f:
-                    f.write(video)
-            else:
-                raise ValueError(f"{file_type} - Not known: valid values are 'video', 'pics'")
-        except FileNotFoundError :
-            if "/storage/emulated/0/Statuses" in self.ANDROID:
-                print("Statuses folder Exists")
-            else:
-                print("Making Statuses Folder")
-                os.makedirs("/sdcard/Statuses")
-                os.makedirs("/sdcard/Statuses/Pics")
-                os.makedirs("/sdcard/Statuses/Videos")
-            Status(file_type, path)
+            with open(path, "rb") as src, open(new_file_path, "wb") as dst:
+                dst.write(src.read())
+        except Exception as e:
+            raise RuntimeError(f"Failed to save status: {e}")
+
 
 
 
