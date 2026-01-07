@@ -202,6 +202,7 @@ class Status:
 
 
 
+
 class HomeScreen(Screen):
 
 	def initialize_display(self):
