@@ -18,6 +18,18 @@ import os
 import itertools
 
 
+# Initialize global variables
+image_paths_all = []
+image_paths_saved = []
+video_paths_all = []
+video_paths_saved = []
+image_path = []
+video_path = []
+image_view = None
+video_view = None
+idx = 0
+
+
 def get_whatsapp_images():
     from jnius import autoclass
 
@@ -418,7 +430,7 @@ class VideoPopup(ModalView):
         if self.ids["save_delete_icon"].icon == "download":
             Status(file_type="video", path=self.video_source)
             global video_paths_saved
-            video_paths_saved: list[str] = glob(
+            video_paths_saved = glob(
                 "/storage/emulated/0/Statuses/Videos/*.mp4"
             )
         elif self.ids["save_delete_icon"].icon == "delete-empty":
