@@ -211,7 +211,7 @@ class HomeScreen(Screen):
 		self.ids['vid_backlay'].texture = first_thumbnail
 		
 		if image_paths_all:
-        	self.ids['img_backlay'].source = image_paths_all[0]
+			self.ids['img_backlay'].source = image_paths_all[0]
 
 	def open_whatsapp(self):
 		# ----------	Logic to open Whatsapp goes here	--------#
@@ -533,11 +533,11 @@ class StatusSaverApp(MDApp):
 		my_manager.current = 'home'
 		return my_manager
 	def on_start(self):
-        ensure_media_permissions(self.after_permissions)
+		ensure_media_permissions(self.after_permissions)
 
-    def after_permissions(self):
-        load_whatsapp_media()
-        self.root.get_screen("home").initialize_display()
+	def after_permissions(self):
+		load_whatsapp_media()
+		self.root.get_screen("home").initialize_display()
 
 
 
