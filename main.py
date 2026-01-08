@@ -88,6 +88,19 @@ def load_whatsapp_media():
 
 
 def ensure_media_permissions(callback):
+    
+	# Request the appropriate storage/media permissions on Android.
+
+    # On Android 13+ (API 33+) we must request the granular media permissions.
+    # On older Android versions we request the legacy external storage perms.
+    # On non-Android platforms we just call the callback immediately.
+    
+
+    # If we're not running on Android (e.g. desktop testing), just continue.
+    if platform != "android":
+        callback()
+        return
+
     from android.permissions import request_permissions, Permission
     from jnius import autoclass
 
@@ -95,12 +108,13 @@ def ensure_media_permissions(callback):
     sdk = Build.VERSION.SDK_INT
 
     if sdk >= 33:
-        request_permissions(
-            [Permission.READ_MEDIA_IMAGES, Permission.READ_MEDIA_VIDEO],
-            lambda *_: callback(),
-        )
+        # Android 13+ granular media permissions
+        perms = [Permission.READ_MEDIA_IMAGES, Permission.READ_MEDIA_VIDEO]
     else:
-        request_permissions([Permission.READ_EXTERNAL_STORAGE], lambda *_: callback())
+        # Legacy external storage permissions for older Android versions
+        perms = [Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE]
+
+    request_permissions(perms, lambda *_: callback())
 
 
 # '''Change this back before push'''
