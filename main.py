@@ -88,34 +88,22 @@ def load_whatsapp_media():
 
 
 def ensure_media_permissions(callback):
-    
-	# Request the appropriate storage/media permissions on Android.
+    from android.permissions import request_permissions, Permission, check_permission
+    from kivy.clock import Clock
 
-    # On Android 13+ (API 33+) we must request the granular media permissions.
-    # On older Android versions we request the legacy external storage perms.
-    # On non-Android platforms we just call the callback immediately.
-    
+    request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
 
-    # If we're not running on Android (e.g. desktop testing), just continue.
-    if platform != "android":
-        callback()
-        return
+    # Step 2: Schedule a check after a short delay (give user time to grant)
+    def _check_permissions(dt):
+        if check_permission(Permission.READ_EXTERNAL_STORAGE):
+            # Permissions granted, call the callback
+            callback()
+        else:
+            print("Permissions not granted yet. Try again.")
+            # Optionally, you can retry automatically or show a message
 
-    from android.permissions import request_permissions, Permission
-    from jnius import autoclass
-
-    Build = autoclass("android.os.Build")
-    sdk = Build.VERSION.SDK_INT
-
-    if sdk >= 33:
-        # Android 13+ granular media permissions
-        perms = [Permission.READ_MEDIA_IMAGES, Permission.READ_MEDIA_VIDEO]
-    else:
-        # Legacy external storage permissions for older Android versions
-        perms = [Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE]
-
-    request_permissions(perms, lambda *_: callback())
-
+    # Check after 0.5 seconds
+    Clock.schedule_once(_check_permissions, 0.5)
 
 # '''Change this back before push'''
 # Window.size = (400, 650)
